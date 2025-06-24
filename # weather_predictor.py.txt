@@ -1,0 +1,48 @@
+# weather_predictor.py
+
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+from sklearn.linear_model import LinearRegression
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import mean_squared_error, r2_score
+
+# Step 1: Load historical weather data
+# Sample CSV format: Date, Temperature, Humidity, WindSpeed, Pressure
+df = pd.read_csv("weather_data.csv")
+
+# Step 2: Preprocess data
+# Drop rows with missing values
+df.dropna(inplace=True)
+
+# Use past values to predict temperature (can modify as needed)
+X = df[['Humidity', 'WindSpeed', 'Pressure']]
+y = df['Temperature']
+
+# Step 3: Split the data into training/testing sets
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+# Step 4: Create linear regression model
+model = LinearRegression()
+model.fit(X_train, y_train)
+
+# Step 5: Make predictions using the test set
+y_pred = model.predict(X_test)
+
+# Step 6: Evaluate the model
+print("Mean squared error:", mean_squared_error(y_test, y_pred))
+print("R2 score:", r2_score(y_test, y_pred))
+
+# Step 7: Predict temperature for new conditions
+# Example input: Humidity=65, WindSpeed=10, Pressure=1012
+new_data = pd.DataFrame([[65, 10, 1012]], columns=['Humidity', 'WindSpeed', 'Pressure'])
+predicted_temp = model.predict(new_data)
+print("Predicted Temperature:", predicted_temp[0])
+
+# Optional: Plot actual vs predicted
+plt.scatter(y_test, y_pred)
+plt.xlabel("Actual Temperature")
+plt.ylabel("Predicted Temperature")
+plt.title("Actual vs Predicted Temperature")
+plt.grid(True)
+plt.show()
